@@ -11,7 +11,7 @@ require("dotenv").config({ path: ".env" });
 // Environment variables should now be available
 // under `process.env`
 const PRIVATE_KEY ="4631b73bedaad273f06dba53872ab67cc2bfcd639fccc21508b589c74706eee4";
-const RPC_URL ="https://rpc.gnosis.gateway.fm";
+const RPC_URL ="https://testnet.bitfinity.network";
 
 // Show an error if environment variables are missing
 if (!PRIVATE_KEY) {
@@ -26,7 +26,7 @@ if (!RPC_URL) {
 module.exports = {
   solidity: "0.8.0",
   networks: {
-    gnosis: {
+    bitfinity: {
       url: RPC_URL,
       accounts: [PRIVATE_KEY],
     },

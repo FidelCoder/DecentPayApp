@@ -21,50 +21,37 @@ function Pay() {
   const [history, setHistory] = useState('')
   const [signer, setSigner] = useState()
   const [provider, setProvider] = useState()
+  const [employees, setEmployees] = useState([]);
+  const [emplyeeAmounts, setEmployeeAmounts] = useState([]);
+  const [employeeAddressses, setEmployeeAddreses] = useState([]);
 
+
+
+
+  useEffect(() => {
+    connectWallet()
+    getEmployees()
+    getTotal()
+  }, [])
 
   const connectWallet = async () => {
-    // const addressArray = await window.ethereum.request({
-    //   method: "eth_requestAccounts"
-    // });
-    // const add = addressArray[0];
-    // setAccount(
-    //   String(add).substring(0, 5) + "..." + String(add).substring(38)
-    // );
-    // Replace with your private key
-    const mumbaiProviderUrl = 'https://polygon-mumbai.g.alchemy.com/v2/your-api-key';
-
-const privateKey = '41b6674049726684bd05f253e3029e2ad92a1d2c45028f4c59739df2f2e1cf18';
+    const bitfinityProviderUrl = 'https://testnet.bitfinity.network';
+    const privateKey = '41b6674049726684bd05f253e3029e2ad92a1d2c45028f4c59739df2f2e1cf18';
 
 // Create a Wallet and a provider
 const wallet = new ethers.Wallet(privateKey);
-const providerr = new ethers.providers.JsonRpcProvider(mumbaiProviderUrl);
-const signerr = wallet.connect(provider);
+const providerr = new ethers.providers.JsonRpcProvider(bitfinityProviderUrl);
+const signerr = wallet.connect(providerr);
 setProvider(providerr)
 setSigner(signerr)
 setAccount(wallet.address)
 
   };
 
-  const [employees, setEmployees] = useState([]);
-  const [emplyeeAmounts, setEmployeeAmounts] = useState([]);
-  const [employeeAddressses, setEmployeeAddreses] = useState([]);
-
-  useEffect(() => {
-    getEmployees()
-    getBalance()
-    getTotal()
-    // onBulkSend();
-console.log("bsd")
-    // console.log(employeeAddressses,emplyeeAmounts)
-    // getHistory()
-  }, [])
-
   const getEmployees = async () => {
     const response = await fetch('http://localhost:8000/employees')
     const people = await response.json()
-    await setEmployees(people)
-    // getTotal()
+     setEmployees(people)
   }
 
   const columns = [
@@ -74,27 +61,11 @@ console.log("bsd")
     { title: "Amount", field: 'amount', },
   ]
 
-  //OnClick Send
-  const onBulkSend = async () => {
-    let allAddresses = [];
-    let allAmounts = [];
-
-    let modifiedArr =  employees.map(function (element) {
-      allAddresses.push(element.address);
-      allAmounts.push(ethers.utils.parseEther((element.amount).toString(), "ethers"));
-    });
-    setEmployeeAddreses(allAddresses);
-    setEmployeeAmounts(allAmounts);
-
-  }
 
   const sendTo = async () => {
     try {
-      // onBulkSend()
       console.log("Starting the sendTo function...");
   
-      // const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // const signer = provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
       
       console.log("Employee Addresses:", employeeAddressses);
@@ -111,19 +82,15 @@ console.log("bsd")
     }
   }
   
-  //Get Transaction History
-
-  //zBso5VaCDfXiyBQlZ5J9RvJdEm2NGa1l
   const config = {
     apiKey: "zBso5VaCDfXiyBQlZ5J9RvJdEm2NGa1l",
-    network: Network.ETH_GOERLI,
+    network: Network.Bifinity,
   };
   const alchemy = new Alchemy(config);
 
   const getHistory = async () => {
     const historyData = await alchemy.core.getAssetTransfers({
       fromBlock: "0x0",
-      // fromAddress: "0x921824BBBeee107c8DAc750163f673519AA364Aa",
       fromAddress: "0x14CE4c8E705531c3CbDDa925b9DeE6Df37aEE48e",
       category: ["erc20"],
     });
@@ -133,30 +100,20 @@ console.log("bsd")
 
   //Get Smart Contract Balance
   const getBalance = async () => {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // const signer = provider.getSigner();
+   
     let contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
     let tx2 = await contract.getSmartContractTokenBalance();
-    // tx2.wait();
-    //  await setBalance(tx2);
     let tx2Omoka = await utils.formatUnits(tx2.toString())
     setBalance(tx2Omoka);
     console.log(tx2Omoka, 'successful');
   }
 
-  //SetAdmin
-  const onHandleAdminChange = (e) => {
-    setAdminAcc(e.target.value)
-    console.log(adminAcc)
-  }
   //used to change the admin/HR
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     // const admin
     console.log("here", adminAcc.admin)
     console.log('submitted')
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
     let contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
     console.log("fuck");
     let tx3 = await contract.setAdmin(adminAcc.admin);
@@ -176,9 +133,7 @@ console.log("bsd")
     setSum(total)
 
   }
- const consoleee = async () => {
-  console.log("loeinjfjkd")
- }
+
 
   return (
     <div className="App">

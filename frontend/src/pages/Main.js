@@ -36,7 +36,7 @@ function Main() {
     e.preventDefault();
     setName('')
     setAddress('')
-    await fetch("https://ubiquitous-trout-559jg4w44qv24wwr-8000.app.github.dev/add", {
+    await fetch("http://localhost:8000/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
